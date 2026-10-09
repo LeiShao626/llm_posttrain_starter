@@ -2,6 +2,7 @@
 
 # 标准库负责解析命令行参数和路径。
 import argparse
+import os
 from pathlib import Path
 
 # torch 负责关闭梯度；PEFT 合并基座和适配器；Transformers 加载模型与分词器。
@@ -10,8 +11,8 @@ from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
-# 推理必须加载与训练相同的基座模型。
-MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"
+# 推理必须加载与训练相同的基座；本地魔搭模型也由 STARTER_MODEL 指定。
+MODEL_ID = os.environ.get("STARTER_MODEL", "Qwen/Qwen2.5-0.5B-Instruct")
 ROOT = Path(__file__).resolve().parent
 
 

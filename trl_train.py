@@ -1,6 +1,7 @@
 """同一个 SFT 任务的 TRL 写法：对照手写训练循环，观察框架封装了什么。"""
 
-# 标准库只负责定位项目目录。
+# 标准库负责读取模型路径设置和定位项目目录。
+import os
 from pathlib import Path
 
 # datasets 读取本地 JSONL；PEFT 配置 LoRA；TRL 管理训练循环。
@@ -9,8 +10,8 @@ from peft import LoraConfig, TaskType
 from trl import SFTConfig, SFTTrainer
 
 
-# 两个脚本使用同一个小模型和同一份样本。
-MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"
+# 默认使用 HF 模型 ID，也允许 STARTER_MODEL 指向魔搭下载的本地目录。
+MODEL_ID = os.environ.get("STARTER_MODEL", "Qwen/Qwen2.5-0.5B-Instruct")
 ROOT = Path(__file__).resolve().parent
 
 
