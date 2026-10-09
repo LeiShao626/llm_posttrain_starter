@@ -4,7 +4,7 @@
 
 ## 学到什么
 
-| 包 | 在本项目中的最小职责 | 看哪里 |
+| 包 | 功能 | 位置 |
 |---|---|---|
 | `torch` | `DataLoader`、`AdamW`、梯度与参数更新 | `manual_train.py` 的训练循环 |
 | `transformers` | 分词器、聊天模板、预训练因果语言模型 | `manual_train.py` 的加载与预处理 |
@@ -23,38 +23,36 @@
 ```bash
 conda create -n llm-starter python=3.10 -y
 conda activate llm-starter
-# 先根据服务器 CUDA 版本安装 PyTorch；下面仅示范 CUDA 12.1。
+# 先根据服务器 CUDA 版本安装 PyTorch。
 pip install torch==2.5.1 --index-url https://mirrors.nju.edu.cn/pytorch/whl/cu121
 pip install -r requirements.txt
 ```
 
-如果服务器 CUDA 版本不同，先按 [PyTorch 安装页](https://pytorch.org/get-started/locally/) 选择对应命令。进入本目录后执行下述命令。模型下载自 [Qwen2.5-0.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct)。
-
 ## 在国内下载模型：选一种方式
 
-训练数据已放在 `data/train.jsonl`，无需访问远程数据集。需要下载的只有基座模型。
+训练数据已在 `data/train.jsonl`，无需访问远程数据集。只需下载基座模型。
 
-### 方式 A：HF 镜像，代码不用改
+### 方式 A：HF 镜像
 
-在**启动 Python 进程之前**设置 `HF_ENDPOINT`，随后照常运行训练脚本。Linux 终端：
+在**启动 Python 进程之前**设置 `HF_ENDPOINT`，随后运行训练脚本。Linux 终端：
 
 ```bash
 export HF_ENDPOINT=https://hf-mirror.com
 accelerate launch --num_processes 1 --mixed_precision fp16 manual_train.py
 ```
 
-这个设置只作用于当前终端会话。[HF-Mirror 使用说明](https://hf-mirror.com/)列有相同的环境变量用法；它是第三方镜像，若不可用可换下面的魔搭方式。
+这个设置只作用于当前终端会话。
 
-### 方式 B：从魔搭下载到项目目录
+### 方式 B：魔搭下载
 
-在项目目录执行一次：
+执行：
 
 ```bash
 pip install modelscope
 modelscope download --model Qwen/Qwen2.5-0.5B-Instruct --local_dir ./models/Qwen2.5-0.5B-Instruct
 ```
 
-之后告诉三个脚本从本地目录加载。Linux 终端：
+之后：
 
 ```bash
 export STARTER_MODEL=./models/Qwen2.5-0.5B-Instruct
@@ -62,11 +60,8 @@ accelerate launch --num_processes 1 --mixed_precision fp16 manual_train.py
 python infer.py --adapter outputs/manual
 ```
 
-`trl_train.py` 会读取同一个 `STARTER_MODEL`。请始终从**项目目录**启动，这样相对路径才指向下载位置。模型页面在[魔搭社区](https://modelscope.cn/models/Qwen/Qwen2.5-0.5B-Instruct)；下载命令用法见 [ModelScope 官方 CLI 文档](https://github.com/modelscope/modelscope/blob/master/docs/source/command.md)。
-
 ## 手写训练循环
 
-打开 [tokenizer_step_by_step.ipynb](tokenizer_step_by_step.ipynb)，按顺序运行代码格。它逐行展开 `tokenize_example`，打印每一步的实际结果，**只下载分词器，不加载模型权重**。本地可以只装下面两个包，不必先装训练依赖：
 
 ```bash
 conda create -n tokenizer-lab python=3.10 -y
@@ -75,8 +70,7 @@ pip install "transformers>=4.51,<5" jupyterlab
 jupyter lab
 ```
 
-默认使用 HF 镜像。若想用已下载的魔搭目录，在启动 Jupyter 前设置 `STARTER_MODEL`，方法见上面的“方式 B”。如果当前 Jupyter 内核里已经导入过 `transformers` 才修改 `HF_ENDPOINT`，请重启内核并从第一格重新运行。
-
+默认使用 HF 镜像。
 
 ```bash
 accelerate launch --num_processes 1 --mixed_precision fp16 manual_train.py
