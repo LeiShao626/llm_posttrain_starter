@@ -35,17 +35,21 @@ def main() -> None:
     # map 把原始数据改成 TRL 可识别的对话式问答格式。
     dataset = dataset.map(to_conversation, remove_columns=dataset.column_names)
     # SFTConfig 集中管理训练参数；V100 支持 fp16，但不支持 bf16。
-    config = SFTConfig(
+    sft_config = SFTConfig(
         output_dir=str(ROOT / "outputs" / "trl"),
         max_steps=12,
         per_device_train_batch_size=1,
         learning_rate=2e-4,
         max_length=128,
+        # 只对回答部分计算 loss，避免模型过拟合 prompt。
         completion_only_loss=True,
+        # fp16混合精度更加节省内存
         fp16=True,
         bf16=False,
         logging_steps=1,
+        # 训练过程中不定期保存 checkpoint。脚本在训练结束后会调用 trainer.save_model(...) 保存一次。
         save_strategy="no",
+        # 不把日志发送到 WandB 等外部实验记录服务
         report_to="none",
     )
     # LoRA 设置与手写版保持一致，便于比较代码接口。
@@ -59,14 +63,14 @@ def main() -> None:
     # SFTTrainer 自动处理聊天模板、分词、batch、loss 和优化器。
     trainer = SFTTrainer(
         model=MODEL_ID,
-        args=config,
+        args=sft_config,
         train_dataset=dataset,
         peft_config=lora_config,
     )
     # 触发 TRL 封装好的训练循环。
     trainer.train()
     # 保存的是 LoRA 适配器，不是完整的 0.5B 基座模型。
-    trainer.save_model(config.output_dir)
+    trainer.save_model(sft_config.output_dir)
 
 
 # 直接执行时才开始训练。
