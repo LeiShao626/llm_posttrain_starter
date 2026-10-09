@@ -1,0 +1,12 @@
+{"prompt":"什么是梯度下降？","completion":"梯度下降沿损失函数梯度的反方向更新参数，目的是逐步减小损失。"}
+{"prompt":"什么是学习率？","completion":"学习率控制每次参数更新的步长。过大可能不稳定，过小则训练缓慢。"}
+{"prompt":"什么是过拟合？","completion":"过拟合指模型在训练数据上表现好，但在未见过的数据上表现差。"}
+{"prompt":"训练集和验证集有什么区别？","completion":"训练集用于更新参数，验证集用于观察模型对未见数据的表现和选择设置。"}
+{"prompt":"什么是反向传播？","completion":"反向传播使用链式法则计算损失对各个可训练参数的梯度。"}
+{"prompt":"为什么训练前要调用 model.train()？","completion":"它让 dropout 等层进入训练模式，但不会自动执行参数更新。"}
+{"prompt":"optimizer.zero_grad() 有什么作用？","completion":"它清除之前累积的梯度，避免无意中把不同训练步的梯度相加。"}
+{"prompt":"loss.backward() 有什么作用？","completion":"它计算损失对可训练参数的梯度，并写入参数的 grad 属性。"}
+{"prompt":"optimizer.step() 有什么作用？","completion":"它根据当前梯度和优化器规则更新参数。"}
+{"prompt":"什么是 token？","completion":"token 是分词器处理文本的基本单位，可能是字、词或词的一部分。"}
+{"prompt":"什么是 LoRA？","completion":"LoRA 冻结原模型的大部分权重，只训练附加的低秩矩阵，以较低成本适配任务。"}
+{"prompt":"什么是 SFT？","completion":"SFT 是监督微调，利用输入和期望输出组成的样本训练模型生成目标回答。"}
